@@ -1,0 +1,49 @@
+---
+# Set the values allowed for various variables
+nginx_setup_vars: [install, uninstall, upgrade]
+
+nginx_install_from_vars: nginx_repository
+
+nginx_branch_vars: [mainline, stable]
+
+
+# Determine the current value of 'nginx_state'
+nginx_state_vals:
+  install: present
+  uninstall: absent
+  upgrade: latest
+
+nginx_default_setup: install
+nginx_state: install
+
+# Set the nginx_platforms check to opensource or plus
+nginx_distributions: "{{ (nginx_type == 'opensource') | ternary(nginx_supported_distributions, nginx_plus_supported_distributions) }}"
+
+# Supported NGINX Open Source distributions
+# https://nginx.org/en/docs/install.html
+nginx_supported_distributions:
+  redhat:
+    name: Red Hat Enterprise Linux
+    versions: [7, 8, 9]
+    architectures: "{{ (['x86_64', 'aarch64'] + ['s390x']) if (ansible_facts['distribution_major_version'] is version('8', '>=')) else ['x86_64', 'aarch64'] }}"
+
+# Default NGINX signing key
+nginx_default_signing_key_pgp: https://nginx.org/keys/nginx_signing.key
+nginx_default_signing_key_rsa_pub: https://nginx.org/keys/nginx_signing.rsa.pub
+
+# Default NGINX Open Source repositories
+nginx_default_repository_redhat: https://nginx.org/packages/{{ (nginx_branch == 'mainline') | ternary('mainline/', '') }}{{ (ansible_facts['distribution'] == 'CentOS') | ternary('centos', 'rhel') }}/{{ ansible_facts['distribution_major_version'] }}/$basearch/
+
+# Red Hat dependencies
+nginx_redhat_dependencies: [ca-certificates]
+
+# Default locations and versions when 'nginx_install_from' is set to 'source'.
+# Set 'pcre_release' to 1 to install PCRE 1, modify the 'openssl_version' to move back to 1.1.1.
+pcre_release: 2
+pcre_version: 10.42
+zlib_version: 1.2.13
+openssl_version: 3.0.7
+
+# Supported NGINX Open Source dynamic modules
+nginx_modules_list: [geoip, image-filter, njs, perl, xslt]
+
