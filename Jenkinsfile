@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none        
   
     parameters {
       string 'student_name'
@@ -11,6 +11,11 @@ pipeline {
 
     stages {
       stage('Main') {
+        agent {
+            docker {
+                image 'python:latest'
+            }
+        }
         steps {
           sh 'pip install -r requirements.txt'
           sh 'python hello.py --name $params.student_name > result.txt'
