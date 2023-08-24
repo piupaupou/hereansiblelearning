@@ -2,7 +2,7 @@ pipeline {
     agent none 
   
     parameters {
-      string 'student_name'
+      string defaultValue: 'Настя', name: 'student_name', trim: true
     }
 
     triggers {
@@ -18,7 +18,7 @@ pipeline {
         } 
         steps {
           sh 'pip install -r requirements.txt'
-          sh 'python hello.py --name ${params.student_name} > result.txt'
+          sh 'python hello.py --name $params.student_name > result.txt'
           archiveArtifacts artifacts: 'result.txt', followSymlinks: false
         }
       }
